@@ -1,7 +1,7 @@
 turtlebot3: #namespace
 
     task_and_robot_environment_name: 'TurtleBot3World-v0'
-    ros_ws_abspath: "/home/danielbugelnig/mobile_robot_navigation_ws3"
+    ros_ws_abspath: "/home/danielbugelnig/mobile_robot_navigation"
     running_step: 0.04 # amount of time the control will be executed
     pos_step: 0.016     # increment in position for each command
     
