@@ -1,0 +1,5 @@
+<launch>
+<arg name="bagfile" default="/home/jasteinbrene/test.bag"/>
+<node name="turtlebot3_recorder" pkg="rosbag" type="record" args="record /imu /move_base/goal /gazebo/model_states /move_base/status -O $(arg bagfile)" />
+<node name="turtlebot3_waypoints1" pkg="turtlebot3_waypoints1" type="turtlebot3_waypoints1.py" output="screen"/>
+</launch>
