@@ -244,7 +244,7 @@ if __name__ == '__main__':
                    str(epsilon_decay) + "|" + str(highest_reward) + "| PICTURE |"))
     
     # Save model
-    torch.save(policy_net.state_dict(), os.path.join(outdir, 'rl_deepQ_model.pth'))
+    torch.save(policy_net.state_dict(), os.path.join(outdir, 'tuned_dql/5_rl_deepQ_model.pth'))
 
     l = last_time_steps.tolist()
     l.sort()

@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     # initialize networks with input and output sizes
     policy_net = DQN(n_observations, n_actions).to(device)
-    policy_net.load_state_dict(torch.load(os.path.join(outdir, 'rl_deepQ_model.pth'), weights_only=True, map_location=device))
+    policy_net.load_state_dict(torch.load(os.path.join(outdir, 'tuned_dql/4_rl_deepQ_model.pth'), weights_only=True, map_location=device))
     policy_net.eval()
     
     observation = env.reset()
