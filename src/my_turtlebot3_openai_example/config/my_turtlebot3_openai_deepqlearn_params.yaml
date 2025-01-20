@@ -2,16 +2,15 @@ turtlebot3: #namespace
 
     task_and_robot_environment_name: 'TurtleBot3World-v0'
     ros_ws_abspath: "/home/omarelghandour/simulation_ws2/MRN_with_AI"
-    running_step: 0.04 # amount of time the control will be executed
+    running_step: 0.06 # amount of time the control will be executed
     pos_step: 0.016     # increment in position for each command
     
     #dqn parameters
-    gamma: 0.999
-    epsilon_start: 0.9
-    epsilon_end: 0.05
-    epsilon_decay: 200
-    n_episodes: 10
-    target_update: 10
-    batch_size: 128
-
-    running_step: 0.06 # Time for each step
+    gamma: 0.98 #0.999
+    epsilon_start: 0.95 #0.9
+    epsilon_end: 0.1 #0.05
+    epsilon_decay: 300 #200
+    n_episodes: 100 #10
+    target_update: 20 #10
+    batch_size: 64 #128
+    
