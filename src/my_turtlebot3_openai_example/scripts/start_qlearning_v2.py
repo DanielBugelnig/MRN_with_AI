@@ -8,6 +8,7 @@ import rospkg
 # ROS packages required
 import rospy
 from gym import wrappers
+from functools import reduce
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
 
 
