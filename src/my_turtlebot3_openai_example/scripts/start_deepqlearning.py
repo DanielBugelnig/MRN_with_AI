@@ -43,8 +43,8 @@ class DQN(nn.Module):
 
     def __init__(self, inputs, outputs):
         super(DQN, self).__init__()
-        self.fc1 = nn.Linear(inputs, 64)
-        self.fc2 = nn.Linear(64, 128)
+        self.fc1 = nn.Linear(inputs, 256)
+        self.fc2 = nn.Linear(256, 128)
         self.fc3 = nn.Linear(128, 64)
         self.head = nn.Linear(64, outputs)
 
@@ -244,7 +244,7 @@ if __name__ == '__main__':
                    str(epsilon_decay) + "|" + str(highest_reward) + "| PICTURE |"))
     
     # Save model
-    torch.save(policy_net.state_dict(), os.path.join(outdir, 'rl_deepQ_model.pth'))
+    torch.save(policy_net.state_dict(), os.path.join(outdir, '6_rl_deepQ_model.pth'))
 
     l = last_time_steps.tolist()
     l.sort()
