@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader, Dataset
 from sklearn.model_selection import train_test_split
 from bagpy import bagreader
 from tqdm import tqdm
+from datetime import datetime
 
 # Define the LSTM model
 class LSTMModel(nn.Module):
@@ -124,6 +125,33 @@ learning_rate = 0.0001
 weight_decay = 1e-5
 sequence_length = 10
 
+def create_excel_log():
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    excel_file = f'training_log_{timestamp}.xlsx'
+
+    def format_value(val):
+        return f"{val:.5f}" if isinstance(val, float) else str(val)
+    
+    # Create hyperparameters DataFrame
+    hyperparams = {
+        'Parameter': ['input_size', 'hidden_size', 'output_size', 'num_layers', 
+                     'batch_size', 'num_epochs', 'learning_rate', 'weight_decay', 
+                     'sequence_length'],
+        'Value': [format_value(input_size), format_value(hidden_size), format_value(output_size),
+                  format_value(num_layers), format_value(batch_size), format_value(num_epochs), 
+                  format_value(learning_rate), format_value(weight_decay), format_value(sequence_length)]
+    }
+    
+    # Create Excel writer
+    with pd.ExcelWriter(excel_file) as writer:
+        # Write hyperparameters
+        pd.DataFrame(hyperparams).to_excel(writer, sheet_name='Hyperparameters', index=False)
+        # Create empty training log sheet
+        pd.DataFrame(columns=['Epoch', 'Train Loss', 'Test Loss']).to_excel(
+            writer, sheet_name='Training_Log', index=False)
+    
+    return excel_file
+
 # Prepare the dataset and dataloader
 dataset = RosbagDataset(rosbag_file, imu_topic, odom_topic, sequence_length)
 
@@ -137,7 +165,7 @@ test_data = np.array(test_data, dtype=np.float32)
 train_labels = np.array(train_labels, dtype=np.float32)
 test_labels = np.array(test_labels, dtype=np.float32)
 
-""" # Normalize data
+# Normalize data
 mean, std = train_data.mean(axis=0), train_data.std(axis=0)
 train_data = (train_data - mean) / std
 test_data = (test_data - mean) / std
@@ -145,7 +173,7 @@ test_data = (test_data - mean) / std
 # Normalize position labels
 position_mean, position_std = train_labels[:, :3].mean(axis=0), train_labels[:, :3].std(axis=0)
 train_labels[:, :3] = (train_labels[:, :3] - position_mean) / position_std
-test_labels[:, :3] = (test_labels[:, :3] - position_mean) / position_std """
+test_labels[:, :3] = (test_labels[:, :3] - position_mean) / position_std
 
 # Create DataLoaders for train and test sets
 train_dataset = torch.utils.data.TensorDataset(
@@ -161,6 +189,9 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 # Training function with validation
 def train_eval_model(model, train_loader, test_loader, criterion, optimizer, num_epochs=10, save_path="model.pth"):
+    excel_file = create_excel_log()
+    training_log = []
+    
     for epoch in range(num_epochs):
         model.train()
         total_train_loss = 0.0
@@ -184,6 +215,24 @@ def train_eval_model(model, train_loader, test_loader, criterion, optimizer, num
                 total_test_loss += loss.item()
 
         print(f"Epoch {epoch + 1}/{num_epochs}, Test Loss: {100 * total_test_loss / len(test_loader):.2f}%")
+
+        # Log metrics
+        log_entry = {
+            'Epoch': epoch + 1,
+            'Train Loss': f"{total_train_loss / len(train_loader):.5f}",
+            'Test Loss': f"{total_test_loss / len(test_loader):.5f}"
+        }
+        training_log.append(log_entry)
+        
+        # Update Excel file
+        with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl', if_sheet_exists='overlay') as writer:
+            pd.DataFrame(training_log).to_excel(
+                writer, 
+                sheet_name='Training_Log',
+                startrow=1,  # Start after header
+                header=False,  # Don't write headers again
+                index=False
+            )
     
     # Save model weights
     print(f"Saving model to {save_path}...")
