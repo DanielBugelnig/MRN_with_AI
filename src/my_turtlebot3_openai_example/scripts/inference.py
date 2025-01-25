@@ -26,8 +26,8 @@ import torch.nn.functional as F
 class DQN(nn.Module):
     def __init__(self, inputs, outputs):
         super(DQN, self).__init__()
-        self.fc1 = nn.Linear(inputs, 64)
-        self.fc2 = nn.Linear(64, 128)
+        self.fc1 = nn.Linear(inputs, 256)
+        self.fc2 = nn.Linear(256, 128)
         self.fc3 = nn.Linear(128, 64)
         self.head = nn.Linear(64, outputs)
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     # initialize networks with input and output sizes
     policy_net = DQN(n_observations, n_actions).to(device)
-    policy_net.load_state_dict(torch.load(os.path.join(outdir, 'rl_deepQ_model.pth'), weights_only=True, map_location=device))
+    policy_net.load_state_dict(torch.load(os.path.join(outdir, '3000_rl_deepQ_model.pth'), weights_only=True, map_location=device))
     policy_net.eval()
     
     observation = env.reset()

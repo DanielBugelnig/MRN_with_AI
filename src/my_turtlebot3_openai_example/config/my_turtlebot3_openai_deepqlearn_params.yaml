@@ -10,7 +10,7 @@ turtlebot3: #namespace
     epsilon_start: 0.7
     epsilon_end: 0.02
     epsilon_decay: 300
-    n_episodes: 500 #500  
+    n_episodes: 3000 #500  
     target_update: 20
     batch_size: 256
 
