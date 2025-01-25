@@ -111,20 +111,6 @@ class RosbagDataset(Dataset):
     def __getitem__(self, idx):
         return torch.tensor(self.data[idx], dtype=torch.float32), torch.tensor(self.labels[idx], dtype=torch.float32)
 
-# Parameters
-rosbag_file = "/Users/matteocoletta/Desktop/UNIVERSITA/UNIUD/AI & CyberSecurity/CORSI/II Anno/Robot Navigation/Final Projet/turtlebot3_imu_odom5_2025-01-17-01-32-02.bag"
-imu_topic = "/imu"
-odom_topic = "/odom"
-input_size = 10  # linear_acceleration.x, linear_acceleration.y, linear_acceleration.z, angular_velocity.x, angular_velocity.y, angular_velocity.z, orientation.x, orientation.y, orientation.z, orientation.w
-hidden_size = 128
-output_size = 7  # pose.pose.position.x, pose.pose.position.y, pose.pose.position.z, pose.pose.orientation.x, pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w
-num_layers = 2
-batch_size = 16
-num_epochs = 50
-learning_rate = 0.0001
-weight_decay = 1e-5
-sequence_length = 10
-
 def create_excel_log():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     excel_file = f'training_log_{timestamp}.xlsx'
@@ -152,96 +138,113 @@ def create_excel_log():
     
     return excel_file
 
-# Prepare the dataset and dataloader
-dataset = RosbagDataset(rosbag_file, imu_topic, odom_topic, sequence_length)
 
-# Split the dataset into training and testing sets
-train_data, test_data, train_labels, test_labels = train_test_split(
-    dataset.data, dataset.labels, test_size=0.2, random_state=42
-)
-
-train_data = np.array(train_data, dtype=np.float32)
-test_data = np.array(test_data, dtype=np.float32)
-train_labels = np.array(train_labels, dtype=np.float32)
-test_labels = np.array(test_labels, dtype=np.float32)
-
-# Normalize data
-mean, std = train_data.mean(axis=0), train_data.std(axis=0)
-train_data = (train_data - mean) / std
-test_data = (test_data - mean) / std
-
-# Normalize position labels
-position_mean, position_std = train_labels[:, :3].mean(axis=0), train_labels[:, :3].std(axis=0)
-train_labels[:, :3] = (train_labels[:, :3] - position_mean) / position_std
-test_labels[:, :3] = (test_labels[:, :3] - position_mean) / position_std
-
-# Create DataLoaders for train and test sets
-train_dataset = torch.utils.data.TensorDataset(
-    torch.tensor(train_data), torch.tensor(train_labels)
-)
-test_dataset = torch.utils.data.TensorDataset(
-    torch.tensor(test_data), torch.tensor(test_labels)
-)
-
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
-
-# Training function with validation
-def train_eval_model(model, train_loader, test_loader, criterion, optimizer, num_epochs=10, save_path="model.pth"):
-    excel_file = create_excel_log()
-    training_log = []
+if __name__ == '__main__':
+    # Parameters
+    rosbag_file = "/Users/matteocoletta/Desktop/UNIVERSITA/UNIUD/AI & CyberSecurity/CORSI/II Anno/Robot Navigation/Final Projet/turtlebot3_imu_odom5_2025-01-17-01-32-02.bag"
+    imu_topic = "/imu"
+    odom_topic = "/odom"
+    input_size = 10  # linear_acceleration.x, linear_acceleration.y, linear_acceleration.z, angular_velocity.x, angular_velocity.y, angular_velocity.z, orientation.x, orientation.y, orientation.z, orientation.w
+    hidden_size = 128
+    output_size = 7  # pose.pose.position.x, pose.pose.position.y, pose.pose.position.z, pose.pose.orientation.x, pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w
+    num_layers = 2
+    batch_size = 16
+    num_epochs = 50
+    learning_rate = 0.0001
+    weight_decay = 1e-5
+    sequence_length = 10
     
-    for epoch in range(num_epochs):
-        model.train()
-        total_train_loss = 0.0
-        for inputs, targets in train_loader:
-            optimizer.zero_grad()
-            outputs = model(inputs)
-            loss = criterion(outputs, targets)
-            loss.backward()
-            optimizer.step()
-            total_train_loss += loss.item()
-
-        print(f"Epoch {epoch + 1}/{num_epochs}, Train Loss: {100 * total_train_loss / len(train_loader):.2f}%")
-
-        # Validation
-        model.eval()
-        total_test_loss = 0.0
-        with torch.no_grad():
-            for inputs, targets in test_loader:
+    
+    # Prepare the dataset and dataloader
+    dataset = RosbagDataset(rosbag_file, imu_topic, odom_topic, sequence_length)
+    
+    # Split the dataset into training and testing sets
+    train_data, test_data, train_labels, test_labels = train_test_split(
+        dataset.data, dataset.labels, test_size=0.2, random_state=42
+    )
+    
+    train_data = np.array(train_data, dtype=np.float32)
+    test_data = np.array(test_data, dtype=np.float32)
+    train_labels = np.array(train_labels, dtype=np.float32)
+    test_labels = np.array(test_labels, dtype=np.float32)
+    
+    # Normalize data
+    mean, std = train_data.mean(axis=0), train_data.std(axis=0)
+    train_data = (train_data - mean) / std
+    test_data = (test_data - mean) / std
+    
+    # Normalize position labels
+    position_mean, position_std = train_labels[:, :3].mean(axis=0), train_labels[:, :3].std(axis=0)
+    train_labels[:, :3] = (train_labels[:, :3] - position_mean) / position_std
+    test_labels[:, :3] = (test_labels[:, :3] - position_mean) / position_std
+    
+    # Create DataLoaders for train and test sets
+    train_dataset = torch.utils.data.TensorDataset(
+        torch.tensor(train_data), torch.tensor(train_labels)
+    )
+    test_dataset = torch.utils.data.TensorDataset(
+        torch.tensor(test_data), torch.tensor(test_labels)
+    )
+    
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    
+    
+    # Training function with validation
+    def train_eval_model(model, train_loader, test_loader, criterion, optimizer, num_epochs=10, save_path="model.pth"):
+        excel_file = create_excel_log()
+        training_log = []
+        
+        for epoch in range(num_epochs):
+            model.train()
+            total_train_loss = 0.0
+            for inputs, targets in train_loader:
+                optimizer.zero_grad()
                 outputs = model(inputs)
                 loss = criterion(outputs, targets)
-                total_test_loss += loss.item()
-
-        print(f"Epoch {epoch + 1}/{num_epochs}, Test Loss: {100 * total_test_loss / len(test_loader):.2f}%")
-
-        # Log metrics
-        log_entry = {
-            'Epoch': epoch + 1,
-            'Train Loss': f"{total_train_loss / len(train_loader):.5f}",
-            'Test Loss': f"{total_test_loss / len(test_loader):.5f}"
-        }
-        training_log.append(log_entry)
-        
-        # Update Excel file
-        with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl', if_sheet_exists='overlay') as writer:
-            pd.DataFrame(training_log).to_excel(
-                writer, 
-                sheet_name='Training_Log',
-                startrow=1,  # Start after header
-                header=False,  # Don't write headers again
-                index=False
-            )
+                loss.backward()
+                optimizer.step()
+                total_train_loss += loss.item()
     
-    # Save model weights
-    print(f"Saving model to {save_path}...")
-    torch.save(model.state_dict(), save_path)
-
-# Initialize the model, criterion, and optimizer
-model = LSTMModel(input_size, hidden_size, output_size, num_layers, dropout_rate=0.2)
-criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-
-# Train the model with validation
-train_eval_model(model, train_loader, test_loader, criterion, optimizer, num_epochs)
+            print(f"Epoch {epoch + 1}/{num_epochs}, Train Loss: {100 * total_train_loss / len(train_loader):.2f}%")
+    
+            # Validation
+            model.eval()
+            total_test_loss = 0.0
+            with torch.no_grad():
+                for inputs, targets in test_loader:
+                    outputs = model(inputs)
+                    loss = criterion(outputs, targets)
+                    total_test_loss += loss.item()
+    
+            print(f"Epoch {epoch + 1}/{num_epochs}, Test Loss: {100 * total_test_loss / len(test_loader):.2f}%")
+    
+            # Log metrics
+            log_entry = {
+                'Epoch': epoch + 1,
+                'Train Loss': f"{total_train_loss / len(train_loader):.5f}",
+                'Test Loss': f"{total_test_loss / len(test_loader):.5f}"
+            }
+            training_log.append(log_entry)
+            
+            # Update Excel file
+            with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl', if_sheet_exists='overlay') as writer:
+                pd.DataFrame(training_log).to_excel(
+                    writer, 
+                    sheet_name='Training_Log',
+                    startrow=1,  # Start after header
+                    header=False,  # Don't write headers again
+                    index=False
+                )
+        
+        # Save model weights
+        print(f"Saving model to {save_path}...")
+        torch.save(model.state_dict(), save_path)
+    
+    # Initialize the model, criterion, and optimizer
+    model = LSTMModel(input_size, hidden_size, output_size, num_layers, dropout_rate=0.2)
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    
+    # Train the model with validation
+    train_eval_model(model, train_loader, test_loader, criterion, optimizer, num_epochs)
