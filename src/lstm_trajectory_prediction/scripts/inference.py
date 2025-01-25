@@ -13,7 +13,7 @@ class GazeboInference:
         # Load the trained model
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = LSTMModel(input_size=10, hidden_size=128, output_size=7, num_layers=2, dropout_rate=0.2)
-        self.model.load_state_dict(torch.load('path_to_your_trained_model.pth', map_location=self.device))
+        self.model.load_state_dict(torch.load('../models/model_seq30.pth', map_location=self.device))
         self.model.to(self.device)
         self.model.eval()
 
