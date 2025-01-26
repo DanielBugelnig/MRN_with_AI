@@ -24,16 +24,16 @@ transform_train = transforms.Compose([
 ])
 
 # Load the dataset
-train_dataset = datasets.ImageFolder(root='ycbv_classification/train', transform=transform_train)
+train_dataset = datasets.ImageFolder(root='/home/danielbugelnig/mobile_robot_navigation/src/image_classification/src/ycbv_classification_new/train', transform=transform_train)
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Load the validation set
-val_dataset = datasets.ImageFolder(root='ycbv_classification/val', transform=transform_val)
+val_dataset = datasets.ImageFolder(root='/home/danielbugelnig/mobile_robot_navigation/src/image_classification/src/ycbv_classification_new/val', transform=transform_val)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
 
 model = resnet50(weights=ResNet50_Weights.DEFAULT)  # resnet50, freeze all parameters
-model = torch.load('res_model_92.pth', weights_only=False)  #load best model
+#model = torch.load('res_model_92.pth', weights_only=False)  #load best model
 for param in model.parameters():
     param.requires_grad = False
 
@@ -98,7 +98,7 @@ def test_loop(dataloader, model, loss_fn):
 
 #Initialize the loss function
 loss_fn = nn.CrossEntropyLoss()
-epochs = 6 
+epochs = 12 
 learning_rate = 0.00005
 weight_decay = 1e-4
 #optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
@@ -137,7 +137,7 @@ for t in range(epochs):
 model.load_state_dict(best_model_weights)  # Revert to best weights if accuracy drops
 print("Done!")
 
-torch.save(model, 'res_model.pth')
+torch.save(model, '/home/danielbugelnig/mobile_robot_navigation/src/image_classification/src/results/res_model_new2.pth')
 print(f"Model trained with hp: epochs: {epochs}, learning_rate{learning_rate}, batch_size: {batch_size}\n, optimizer: Adam")
 #model = torch.load('model.pth', weights_only=False),
 

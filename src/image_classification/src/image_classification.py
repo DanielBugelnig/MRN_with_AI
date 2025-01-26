@@ -2,6 +2,8 @@
 import torch
 import rospy
 from sensor_msgs.msg import Image
+from std_msgs.msg import String
+
 
 import torch
 import torch.nn as nn
@@ -25,7 +27,7 @@ labels_map = {
     1: "Cheezit",
     2: "Frenchis"
 }
-
+publisher = None
 
 def callback_function(image):
     """
@@ -50,23 +52,26 @@ def callback_function(image):
     #print(f"Model dtype: {next(model.parameters()).dtype}")
 
     output = model(tensor_image)
-    threshold = 0.45
+    threshold = 0.35
     output = torch.softmax(output, dim=1) # Convert to probabilities
     max_value, predicted_label = torch.max(output, dim=1)
     print(output)
+    result = ""
     if (max_value > threshold):
-        print(f"Object detected: {labels_map[predicted_label.item()]}")
+        result = f"Object detected: {labels_map[predicted_label.item()]}"
     else:
-        print("No object")
+        result = "No object detected"
+    rospy.loginfo(result)
+    publisher.publish(result)
 
 
 def subscriber_node():
-    """
-    Initializes the subscriber node.
-    """
     # Initialize the node
+    global publisher
     rospy.init_node('object_classification_node')
-    
+
+    publisher = rospy.Publisher('/object_classification_result', String, queue_size=10)
+
     # Subscribe to the topic
     rospy.Subscriber('/turtlebot3_burger/camera1/image_raw', Image, callback_function, queue_size=10)
     
@@ -76,8 +81,9 @@ def subscriber_node():
 if __name__ == '__main__':
     # selecting device and loading model
     device = torch.device("cpu")
-    model = torch.load('res_model_100.pth', weights_only=False)
+    model = torch.load('/home/danielbugelnig/mobile_robot_navigation/src/image_classification/src/results/res_model_new2.pth', weights_only=False)
     model = model.to(device)
+    model.eval()
 
 # subscribe to image node, then in callback classify image
     try:

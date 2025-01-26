@@ -23,7 +23,7 @@ def denormalize(image):
     return image
 
 # Load the validation set
-val_dataset = datasets.ImageFolder(root='ycbv_classification/val', transform=transform)
+val_dataset = datasets.ImageFolder(root='/home/danielbugelnig/mobile_robot_navigation/src/image_classification/src/ycbv_classification_new/val', transform=transform)
 val_loader = DataLoader(val_dataset, batch_size=7,shuffle=False)
 
 
@@ -41,7 +41,7 @@ images, labels = next(data_iter)
 
 # selectin device and loading model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = torch.load('res_model_100.pth', weights_only=False)
+model = torch.load('/home/danielbugelnig/mobile_robot_navigation/src/image_classification/src/results/res_model_new2.pth', weights_only=False)
 model = model.to(device)
 
 
