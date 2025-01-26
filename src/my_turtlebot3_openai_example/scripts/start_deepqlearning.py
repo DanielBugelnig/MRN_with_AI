@@ -43,9 +43,10 @@ class DQN(nn.Module):
 
     def __init__(self, inputs, outputs):
         super(DQN, self).__init__()
-        self.fc1 = nn.Linear(inputs, 64)
-        self.fc2 = nn.Linear(64, 128)
-        self.fc3 = nn.Linear(128, 64)
+        self.fc1 = nn.Linear(inputs, 512)
+        self.fc2 = nn.Linear(512, 256)
+        self.fc3 = nn.Linear(256, 128)
+        self.fc4 = nn.Linear(128,64)
         self.head = nn.Linear(64, outputs)
 
     # Called with either one element to determine next action, or a batch
@@ -55,6 +56,7 @@ class DQN(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
+        x = F.relu(self.fc4(x))
         return self.head(x)
 
 
@@ -155,8 +157,11 @@ if __name__ == '__main__':
     target_update = rospy.get_param("/turtlebot3/target_update")
 
     running_step = rospy.get_param("/turtlebot3/running_step")
+    replay_memory_size= rospy.get_param("/turtlebot3/replay_memory_size")
+    learning_rate = rospy.get_param("/turtlebot3/learning_rate")
 
     # Initialises the algorithm that we are going to use for learning
+
     # if gpu is to be used
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -173,8 +178,8 @@ if __name__ == '__main__':
     target_net.load_state_dict(policy_net.state_dict())
     target_net.eval()
 
-    optimizer = optim.RMSprop(policy_net.parameters())
-    memory = ReplayMemory(10000)
+    optimizer = optim.RMSprop(policy_net.parameters(),lr=learning_rate)
+    memory = ReplayMemory(replay_memory_size)
     episode_durations = []
     steps_done = 0
 
@@ -244,7 +249,7 @@ if __name__ == '__main__':
                    str(epsilon_decay) + "|" + str(highest_reward) + "| PICTURE |"))
     
     # Save model
-    torch.save(policy_net.state_dict(), os.path.join(outdir, 'rl_deepQ_model.pth'))
+    torch.save(policy_net.state_dict(), os.path.join(outdir, 'training_results/3000_1deepQ_model.pth'))
 
     l = last_time_steps.tolist()
     l.sort()

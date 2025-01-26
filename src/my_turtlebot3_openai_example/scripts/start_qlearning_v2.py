@@ -8,6 +8,7 @@ import rospkg
 # ROS packages required
 import rospy
 from gym import wrappers
+from functools import reduce
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
 
 
@@ -78,7 +79,7 @@ if __name__ == '__main__':
     # Set the logging system
     rospack = rospkg.RosPack()
     pkg_path = rospack.get_path('my_turtlebot3_openai_example')
-    outdir = pkg_path + '/training_results'
+    outdir = pkg_path + '/training_results/tuned_dql'
     #env = wrappers.Monitor(env, outdir, force=True)
     # env = wrappers.RecordEpisodeStatistics(env, outdir, force=True)
     rospy.loginfo("Monitor Wrapper started")

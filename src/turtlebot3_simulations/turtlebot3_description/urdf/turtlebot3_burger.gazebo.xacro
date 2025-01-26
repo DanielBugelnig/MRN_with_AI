@@ -78,7 +78,7 @@
       <topicName>imu</topicName>
       <serviceName>imu_service</serviceName>
       <gaussianNoise>0.0</gaussianNoise>
-      <updateRate>0</updateRate>
+      <updateRate>0</updateRate>  <!-- set from 0 to 100 -->
       <imu>
         <noise>
           <type>gaussian</type>
