@@ -7,6 +7,14 @@ import numpy as np
 
 class GazeboInference:
     def __init__(self):
+        """
+        Initialize the GazeboInference class.
+
+        - Sets up the ROS node.
+        - Loads a trained LSTM model.
+        - Initializes a data buffer for sequence input.
+        - Subscribes to IMU data and sets up a publisher for predicted pose.
+        """
         # Initialize the ROS node
         rospy.init_node('gazebo_inference_node', anonymous=True)
 
@@ -28,6 +36,12 @@ class GazeboInference:
         self.pose_pub = rospy.Publisher('/predicted_pose', Pose, queue_size=10)
 
     def imu_callback(self, data):
+        """
+        Callback function for processing IMU messages.
+
+        Args:
+            data (sensor_msgs.msg.Imu): The incoming IMU message containing accelerations, angular velocities, and orientations.
+        """
         # Extract IMU data for model input
         imu_data = [
             data.linear_acceleration.x,
@@ -52,6 +66,9 @@ class GazeboInference:
             self.run_model()
 
     def run_model(self):
+        """
+        Perform inference using the buffered IMU data and publish the predicted pose.
+        """
         # Prepare input tensor
         input_tensor = torch.tensor(self.data_buffer, dtype=torch.float32).unsqueeze(0).to(self.device)
 
@@ -63,6 +80,12 @@ class GazeboInference:
         self.publish_pose(predictions)
 
     def publish_pose(self, predictions):
+        """
+        Publish the predicted pose as a ROS Pose message.
+
+        Args:
+            predictions (torch.Tensor): The model's output containing position and orientation predictions.
+        """
         # Extract pose predictions
         position = predictions[0, :3].cpu().numpy()
         orientation = predictions[0, 3:].cpu().numpy()
@@ -81,6 +104,9 @@ class GazeboInference:
         self.pose_pub.publish(pose_msg)
 
 if __name__ == '__main__':
+    """
+    Main script to initialize the GazeboInference node and start processing IMU data.
+    """
     try:
         inference_node = GazeboInference()
         rospy.spin()
