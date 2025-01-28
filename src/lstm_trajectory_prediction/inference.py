@@ -27,7 +27,7 @@ class GazeboInference:
 
         # Buffer for LSTM input
         self.sequence_length = 50
-        self.data_buffer = [[0.0] * 10] * self.sequence_length  # Pre-fill buffer with zeros to avoid delays
+        buffer = [[0.0] * 10 for _ in range(sequence_length)]  # Pre-fill buffer with zeros to avoid delays
 
         # Subscribe to the /imu topic
         self.imu_sub = rospy.Subscriber('/imu', Imu, self.imu_callback)
