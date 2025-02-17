@@ -1,0 +1,9 @@
+
+<launch>
+
+
+    <!-- 2. Launch the Trajectory Prediction Node -->
+    <node pkg="lstm_trajectory_prediction" name="lstm_trajectory_prediction" type="inference.py" output="screen">
+    </node>
+
+</launch>

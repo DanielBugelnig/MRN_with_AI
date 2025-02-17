@@ -3,3 +3,4 @@ devel/
 logs/
 .catkin_tools/
 .vscode/
+src/image_classification/scripts/dataset
