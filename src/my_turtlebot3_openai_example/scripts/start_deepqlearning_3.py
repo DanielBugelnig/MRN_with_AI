@@ -5,7 +5,11 @@
 1- this new script is including the graphing of rewards while the code is running!
 2-  there are 2 ways of plotting: plot after finish,, you will find the line commented down below at the end   #######################plot after run########################
 3- and plot while moving will find the plotting call function below as check #######################plot while run######################## and will be placed at
-    rewards/episode_res.png
+    rewards/episode_res.pn
+4- make a text file for all Deurations vs episods too    
+5- save the .pth file for the best episode
+6- add the hyperparameters and the best scores of the run in the txt file.
+
 '''
 
 import os
@@ -33,7 +37,8 @@ import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
 
-trial= "T14"  #name the trial by diffrent name each run!!
+trial= "T15"  #name the trial by diffrent name each run!!
+best_score=0  
 
 class ReplayMemory(object):
 
@@ -83,14 +88,13 @@ def ploter(n_episodes,rewards_per_episode):
     save_plot_path = os.path.join(outdir, "rewards/"+trial+"_episode_res.png")
 
     # Save episode data to a TXT file
-    with open(save_txt_path, "w") as f:
-        for t in range(n_episodes):
-            f.write(f"{t + 1}, {mean_rewards[t]}\n")  # Save as "Episode, Reward"
+    with open(save_txt_path, "a") as f:
+        f.write(f"{n_episodes}, {rewards_per_episode[n_episodes]}\n")  # Save as "Episode, Reward"
 
     #plot settings
     plt.clf()
     plt.ion()  # Turn on interactive mode
-    plt.plot(range(1, n_episodes + 1),mean_rewards, marker='o', linestyle='-', color='b', label='Reward per Episode')
+    plt.plot(range(0, n_episodes ),mean_rewards, marker='o', linestyle='-', color='b', label='Reward per Episode')
     plt.xlabel('Number of Episodes')
     plt.ylabel('Duration')
     plt.title('Results')
@@ -202,6 +206,23 @@ if __name__ == '__main__':
     running_step = rospy.get_param("/turtlebot3/running_step")
     replay_memory_size= rospy.get_param("/turtlebot3/replay_memory_size")
     learning_rate = rospy.get_param("/turtlebot3/learning_rate")
+    
+    #save to afile the hyperparameters
+    save_txt_path = os.path.join(outdir, "rewards/"+trial+"_episode_data.txt")
+    with open(save_txt_path, "w") as f:
+        
+        f.write(f"gamma:, {gamma}\n") 
+        f.write(f"epsilon_start:, {epsilon_start}\n") 
+        f.write(f"epsilon_end:, {epsilon_end}\n")
+        f.write(f"epsilon_decay:, {epsilon_decay}\n")
+        f.write(f"n_episodes:, {n_episodes}\n")
+        f.write(f"batch_size:, {batch_size}\n")
+        f.write(f"target_update:, {target_update}\n")
+        
+        f.write(f"running_step:, {running_step}\n")
+        f.write(f"replay_memory_size:, {replay_memory_size}\n")
+        f.write(f"learning_rate:, {learning_rate}\n")
+
 
     # Initialises the algorithm that we are going to use for learning
 
@@ -280,6 +301,11 @@ if __name__ == '__main__':
                 rewards_per_episode[i_episode] = last_time_steps[i_episode]
                 #######################plot while run########################
                 ploter(i_episode,rewards_per_episode)
+                if rewards_per_episode[i_episode]>= best_score:
+                    #save the best .pth for best one
+                    best_score=rewards_per_episode[i_episode]
+                    torch.save(policy_net.state_dict(), os.path.join(outdir, f"tuned_dql/episode_{i_episode}_"+trial+"_Bestone_rl_deepQ_model.pth"))
+
                 break
             else:
                 rospy.logdebug("NOT DONE")
@@ -307,8 +333,8 @@ if __name__ == '__main__':
     rospy.loginfo(("\n|" + str(n_episodes) + "|" + str(gamma) + "|" + str(epsilon_start) + "*" +
                    str(epsilon_decay) + "|" + str(highest_reward) + "| PICTURE |"))
     
-    # Save model
-    torch.save(policy_net.state_dict(), os.path.join(outdir, "tuned_dql/"+trial+"_rl_deepQ_model.pth"))
+    # Save model the final model
+    torch.save(policy_net.state_dict(), os.path.join(outdir, "tuned_dql/"+trial+"_Final_episode_model_rl_deepQ_model.pth"))
     
 
     #######################plot after run########################
@@ -321,5 +347,12 @@ if __name__ == '__main__':
     # print("Parameters: a="+str)
     rospy.loginfo("Overall score: {:0.2f}".format(last_time_steps.mean()))
     rospy.loginfo("Best 100 score: {:0.2f}".format(reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])))
+
+    #add into the text at the end:
+    save_txt_path = os.path.join(outdir, "rewards/"+trial+"_episode_data.txt")
+    with open(save_txt_path,"a") as f:
+        f.write("\n Overall score: {:0.2f}".format(last_time_steps.mean()))  # Save as "Episode, Reward"
+        f.write("\n Best 100 score: {:0.2f}".format(reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])))  # Save as "Episode, Reward"
+
 
     env.close()
