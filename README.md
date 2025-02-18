@@ -14,7 +14,7 @@ This project involves tasks related to mobile robots, such as position estimatio
 
 **⚠️ Notes:**
 - Errors may occur due to fluctuating IMU topic frequency during recording and operation.
-- Initial position updates only once when the script starts.
+- The initial position updates only once when the script starts.
 
 ---
 ### Object Detection with ResNet
@@ -73,7 +73,7 @@ rostopic echo /object_classification_result
    ```bash
    git clone <repository-url>
    ```
-2. **Switch to your branch:**
+2. **Switch to your branch (if working on it):**
    ```bash
    git checkout -b <your-branch-name>
    ```
@@ -82,8 +82,23 @@ rostopic echo /object_classification_result
    - `src/turtlebot3_simulations/turtlebot3_gazebo/worlds/turtlebot3_world_objects_light.world` (multiple occurrences)
    - `src/my_turtlebot3_openai_example/config/my_turtlebot3_openai_qlearn_params_v2.yaml`
    - `src/my_turtlebot3_openai_example/config/my_turtlebot3_openai_deepqlearn_params.yaml`
+   - ...
 
-   **Note:** Ensure that all root paths are correctly adjusted using a search function.
+   **Note:** Ensure all root paths are correctly adjusted using the search function.
+4. Install all dependencies
+   ```bash
+   pip install -r requirements.txt
+   ```
+   
+5. **Build and Source the workspace**
+   ```bash
+   catkin build
+   source devel/setup.bash
+   ```
+6. **Execute the roslaunch files**
+   Described above in **Inference commands** and **Listening to topics**
+   Note, that the navigation launchfile should be started first, as it builds the turtlebotenvironment
+
 
 
 
