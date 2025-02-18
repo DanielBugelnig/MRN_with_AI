@@ -1,0 +1,134 @@
+turtlebot3: #namespace
+
+    task_and_robot_environment_name: 'TurtleBot3World-v0'
+    ros_ws_abspath: "/home/omarelghandour/simulation_ws2/MRN_with_AI"
+
+    running_step: 0.02 #0.02 #0.02 #0.03 #0.03 #0.04 #0.04 #0.04 #0.035 #0.04 #0.04 #0.04 #0.06 #0.04   # amount of time the control will be executed
+    pos_step:  0.014 #0.014 #0.014 #0.012 #0.012 #0.014 #0.014 #0.014 #0.012 #0.014 #0.014 #0.014 #0.016   #0.016  # increment in position for each command
+    #dqn parameters
+    gamma: 0.98 #0.99 #0.995 #0.995 #0.995 #0.99 #0.99 #0.99 #0.998 #0.995 #0.999 #0.099 #0.98 #0.999
+    epsilon_start: 0.98 #0.95 #1.0 #1.0 #1.0 #0.95 #0.95 #0.95 #0.97 #0.95 #0.95 #0.95 #0.95 #0.9
+    epsilon_end: 0.05 #0.01 #0.01 #0.01 #0.01 #0.05 #0.05 #0.05 #0.02 #0.03 #0.05 #0.05 #0.1 #0.05
+    epsilon_decay: 200 #200 #200 #150 #150 #200 #200 #200 #300 #250 #200 #200 #300 #200
+    n_episodes: 50 #150 #750 #500 #500 #150 #400 #150 #700 #650 #500 #150 #90 #10
+    target_update: 20 #10 #10 #10 #10 #20 #20 #20 #20 #15 #20 #20 #20 #10
+    batch_size: 256 #256 #256 #256 #256 #128 #128 #128 #256 #128 #128 #128 #64 #128
+    learning_rate: 0.0001 #0.0001 #0.0001 #0.0001 #0.0001     #0.01 #0.01 #0.01 #0.01 #0.01 #0.01 #0.01 #0.01 #0.01 
+    replay_memory_size: 100000 #100000 #100000 #50000 #50000 #10000 #10000 #10000 #10000 #10000 #10000 #10000 #10000 #10000
+
+#Overall score:     12-12.23    11-21.38  10-5.81 9-9.65 8-20.37 7-8.44 6-16.11  5-11.37 4-12.28  3-12.10 2-12.14   1-12.14   0-not recorded
+#Best 100 score:    12- 15.48    11-28.86    10-9.4 9-15.49 8-27.66 7-14.85 6-20.01  5-22.75 4-22.52  3-20.49 2-14.85 1-12.14   0- not recorded
+
+
+
+
+
+
+###############for run 12 (daniel old code)
+
+# learnin rate added
+# replay memory size added 
+#4 neurons starting from 512 to 64
+
+
+
+#### for run 11- before Save_2 text
+#new code and the old one is Save_2
+
+
+
+
+
+
+
+
+
+################### for run 10-
+# AI configirations recomentation
+
+    # def __init__(self, inputs, outputs):
+    #     super(DQN, self).__init__()
+    #     self.fc1 = nn.Linear(inputs, 512)
+    #     self.fc2 = nn.Linear(512, 256)
+    #     self.fc3 = nn.Linear(256, 128)
+    #     self.fc4 = nn.Linear(128, 64) 
+    #     self.head = nn.Linear(64, outputs)
+
+    # # Called with either one element to determine next action, or a batch
+    # # during optimization. Returns tensor([[left0exp,right0exp]...]).
+    # def forward(self, x):
+    #     x = x.to(device)
+    #     x = F.relu(self.fc1(x))
+    #     x = F.relu(self.fc2(x))
+    #     x = F.relu(self.fc3(x))
+    #     x = F.relu(self.fc4(x))
+    #     return self.head(x)
+
+
+
+
+
+################# for run 9-
+# AI configirations recomentation
+
+# learnin rate added
+# replay memory size added 
+
+# if done:
+#     if crash:
+#         reward = -10  # High penalty for crashing
+#     else:
+#         reward = 10   # High reward for reaching a goal
+# else:
+#     reward = 1 - (distance_to_closest_obstacle / max_distance)
+
+#     def __init__(self, inputs, outputs):
+#         super(DQN, self).__init__()
+#         self.fc1 = nn.Linear(inputs, 512)
+#         self.fc2 = nn.Linear(512, 256)
+#         self.fc3 = nn.Linear(256, 128)
+#         self.head = nn.Linear(128, outputs)
+
+#     # Called with either one element to determine next action, or a batch
+#     # during optimization. Returns tensor([[left0exp,right0exp]...]).
+#     def forward(self, x):
+#         x = x.to(device)
+#         x = F.relu(self.fc1(x))
+#         x = F.relu(self.fc2(x))
+#         x = F.relu(self.fc3(x))
+#         return self.head(x)
+
+
+
+
+
+
+################# for run 8-
+# def __init__(self, inputs, outputs):
+#     super(DQN, self).__init__()
+#     self.fc1 = nn.Linear(inputs, 256)
+#     self.fc2 = nn.Linear(256, 128)
+#     self.fc3 = nn.Linear(128, 64)
+#     self.head = nn.Linear(64, outputs)
+
+# # Called with either one element to determine next action, or a batch
+# # during optimization. Returns tensor([[left0exp,right0exp]...]).
+# def forward(self, x):
+#     x = x.to(device)
+#     x = F.relu(self.fc1(x))
+#     x = F.relu(self.fc2(x))
+#     x = F.relu(self.fc3(x))
+#     return self.head(x)
+
+
+
+
+#################### for run 7- 
+# self.fc1 = nn.Linear(inputs, 256)
+# self.fc2 = nn.Linear(256, 128)
+# self.fc3 = nn.Linear(128, 64)
+# self.head = nn.Linear(64, outputs)
+
+# x = F.relu(self.fc1(x))
+# x = F.relu(self.fc2(x))
+# x = F.relu(self.fc3(x))

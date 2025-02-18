@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+'''
+#############Edits!###############
+1- this new script is including the graphing of rewards while the code is running!
+2-  there are 2 ways of plotting: plot after finish,, you will find the line commented down below at the end   #######################plot after run########################
+3- and plot while moving will find the plotting call function below as check #######################plot while run######################## and will be placed at
+    rewards/episode_res.png
+'''
+
 import os
 import gym
 import numpy
@@ -21,6 +29,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 
 class ReplayMemory(object):
@@ -58,6 +70,37 @@ class DQN(nn.Module):
         x = F.relu(self.fc3(x))
         x = F.relu(self.fc4(x))
         return self.head(x)
+
+
+#plotter function
+def ploter(n_episodes,rewards_per_episode):
+    mean_rewards = np.zeros(n_episodes)
+    for t in range(n_episodes):
+        mean_rewards[t] = rewards_per_episode[t]
+    
+    # Paths for saving
+    save_txt_path = os.path.join(outdir, "rewards/episode_data.txt")
+    save_plot_path = os.path.join(outdir, "rewards/episode_res.png")
+
+    # Save episode data to a TXT file
+    with open(save_txt_path, "w") as f:
+        for t in range(n_episodes):
+            f.write(f"{t + 1}, {mean_rewards[t]}\n")  # Save as "Episode, Reward"
+
+    #plot settings
+    plt.clf()
+    plt.ion()  # Turn on interactive mode
+    plt.plot(range(1, n_episodes + 1),mean_rewards, marker='o', linestyle='-', color='b', label='Reward per Episode')
+    plt.xlabel('Number of Episodes')
+    plt.ylabel('Duration')
+    plt.title('Results')
+    plt.grid(True)
+    plt.legend()
+
+    #save fig
+    plt.savefig(save_plot_path)
+    plt.ioff()  # Turn off interactive mode
+    plt.show(block=False)  # Show final plot without blocking 
 
 
 def select_action(state, eps_start, eps_end, eps_decay):
@@ -185,12 +228,16 @@ if __name__ == '__main__':
 
     start_time = time.time()
     highest_reward = 0
+    
+    rewards_per_episode= np.zeros(n_episodes)
 
     # Starts the main training loop: the one about the episodes to do
     for i_episode in range(n_episodes):
         rospy.logdebug("############### START EPISODE=>" + str(i_episode))
 
         cumulated_reward = 0
+
+
         done = False
 
         # Initialize the environment and get first state of the robot
@@ -229,15 +276,27 @@ if __name__ == '__main__':
                 episode_durations.append(t + 1)
                 rospy.logdebug("DONE")
                 last_time_steps = numpy.append(last_time_steps, [int(t + 1)])
+                
+                rewards_per_episode[i_episode] = last_time_steps[i_episode]
+                #######################plot while run########################
+                ploter(i_episode,rewards_per_episode)
                 break
             else:
                 rospy.logdebug("NOT DONE")
                 state = next_state
+            
 
             rospy.logwarn("############### END Step=>" + str(t))
             # Update the target network, copying all weights and biases in DQN
         if i_episode % target_update == 0:
             target_net.load_state_dict(policy_net.state_dict())
+        
+        '''
+        if reward >= 1:
+            rewards_per_episode[i_episode] = reward
+        
+        rewards_per_episode[i_episode] = reward
+        '''
 
         m, s = divmod(int(time.time() - start_time), 60)
         h, m = divmod(m, 60)
@@ -249,7 +308,12 @@ if __name__ == '__main__':
                    str(epsilon_decay) + "|" + str(highest_reward) + "| PICTURE |"))
     
     # Save model
-    torch.save(policy_net.state_dict(), os.path.join(outdir, 'tuned_dql/13_rl_deepQ_model.pth'))
+    torch.save(policy_net.state_dict(), os.path.join(outdir, 'tuned_dql/14_rl_deepQ_model.pth'))
+    
+
+    #######################plot after run########################
+    #ploter(n_episodes,rewards_per_episode)
+
 
     l = last_time_steps.tolist()
     l.sort()
