@@ -1,0 +1,3 @@
+image_classification:
+  threshold: 0.3
+  model: "/home/danielbugelnig/mobile_robot_navigation/src/image_classification/results/res_model_new2.pth" 

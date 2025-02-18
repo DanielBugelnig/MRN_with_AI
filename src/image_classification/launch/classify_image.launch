@@ -1,0 +1,9 @@
+
+<launch>
+    <rosparam file="$(find image_classification)/config/params.yaml" command="load"/>
+
+    <!-- Launch the Image Classification Node -->
+    <node pkg="image_classification" name="image_classifier" type="image_classification.py" output="screen">
+    </node>
+
+</launch>

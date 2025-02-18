@@ -26,6 +26,23 @@ import torch.nn.functional as F
 class DQN(nn.Module):
     def __init__(self, inputs, outputs):
         super(DQN, self).__init__()
+        self.fc1 = nn.Linear(inputs, 512)
+        self.fc2 = nn.Linear(512, 256)
+        self.fc3 = nn.Linear(256, 128)
+        self.fc4 = nn.Linear(128,64)
+        self.head = nn.Linear(64, outputs)
+
+    def forward(self, x):
+        x = x.to(device)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        x = F.relu(self.fc4(x))
+        return self.head(x)
+    
+class DQN_small(nn.Module):
+    def __init__(self, inputs, outputs):
+        super(DQN_small, self).__init__()
         self.fc1 = nn.Linear(inputs, 256)
         self.fc2 = nn.Linear(256, 128)
         self.fc3 = nn.Linear(128, 64)
@@ -68,9 +85,9 @@ if __name__ == '__main__':
     eps_threshold = 0.9
 
     # initialize networks with input and output sizes
-    policy_net = DQN(n_observations, n_actions).to(device)
-    policy_net.load_state_dict(torch.load(os.path.join(outdir, 'tuned_dql/4_rl_deepQ_model.pth'), weights_only=True, map_location=device))
-    policy_net.eval()
+    policy_net = DQN_small(n_observations, n_actions).to(device)
+    policy_net.load_state_dict(torch.load(os.path.join(outdir, '3000_rl_deepQ_model.pth'), weights_only=True, map_location=device))
+    policy_net.eval() 
     
     observation = env.reset()
     state = torch.tensor(observation, device=device, dtype=torch.float)
