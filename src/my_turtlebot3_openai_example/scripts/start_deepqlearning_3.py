@@ -33,7 +33,7 @@ import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
 
-
+trial= "T14"  #name the trial by diffrent name each run!!
 
 class ReplayMemory(object):
 
@@ -79,8 +79,8 @@ def ploter(n_episodes,rewards_per_episode):
         mean_rewards[t] = rewards_per_episode[t]
     
     # Paths for saving
-    save_txt_path = os.path.join(outdir, "rewards/episode_data.txt")
-    save_plot_path = os.path.join(outdir, "rewards/episode_res.png")
+    save_txt_path = os.path.join(outdir, "rewards/"+trial+"_episode_data.txt")
+    save_plot_path = os.path.join(outdir, "rewards/"+trial+"_episode_res.png")
 
     # Save episode data to a TXT file
     with open(save_txt_path, "w") as f:
@@ -308,7 +308,7 @@ if __name__ == '__main__':
                    str(epsilon_decay) + "|" + str(highest_reward) + "| PICTURE |"))
     
     # Save model
-    torch.save(policy_net.state_dict(), os.path.join(outdir, 'tuned_dql/14_rl_deepQ_model.pth'))
+    torch.save(policy_net.state_dict(), os.path.join(outdir, "tuned_dql/"+trial+"_rl_deepQ_model.pth"))
     
 
     #######################plot after run########################
