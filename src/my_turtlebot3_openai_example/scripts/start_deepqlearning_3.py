@@ -356,10 +356,11 @@ if __name__ == '__main__':
 
 
     env.close()
-
+    '''
     #shut down my laptop after finish~
     time.sleep(180)  # Wait for 3 minutes to make the pc cool down
     print("\n Bye")
     print("\n Bye")
     os.system('shutdown now')
+    '''
 
