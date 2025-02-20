@@ -53,6 +53,23 @@ This project involves tasks related to mobile robots, such as position estimatio
 roslaunch my_turtlebot3_openai_example start_training.launch
 ```
 
+
+---
+### Hyperparameter Optimization
+
+**Scripts:**
+```bash
+roslaunch my_turtlebot3_openai_example start_training_3.launch
+```
+
+**Output:**
+`training_results`
+`training_results/rewards``
+
+**⚠️ Notes:**
+- Need more than 6500 episode to cover acceptable ws
+- Adjust the exploration and the exploitation based on the objects in your ws
+
 ---
 ### Inference Commands
 ```bash
@@ -97,8 +114,7 @@ rostopic echo /object_classification_result
    ```
 6. **Execute the roslaunch files**
    Described above in **Inference commands** and **Listening to topics**
-   Note, that the navigation launchfile should be started first, as it builds the turtlebotenvironment
-
+   Note, that the navigation launchfile should be started first, as it builds the turtlebot-environment
 
 
 
