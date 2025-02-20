@@ -3,4 +3,4 @@ devel/
 logs/
 .catkin_tools/
 .vscode/
-src/image_classification/scripts/dataset
+src/image_classification/scripts/ycbv_classification_original
