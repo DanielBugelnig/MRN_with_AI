@@ -41,7 +41,7 @@ images, labels = next(data_iter)
 
 # selectin device and loading model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = torch.load('results/res_model_new2.pth', weights_only=False)
+model = torch.load('../results/res_model_ycbv_orig.pth', weights_only=False)
 model = model.to(device)
 
 

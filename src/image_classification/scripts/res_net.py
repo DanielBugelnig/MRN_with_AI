@@ -24,11 +24,11 @@ transform_train = transforms.Compose([
 ])
 
 # Load the dataset
-train_dataset = datasets.ImageFolder(root='dataset/train', transform=transform_train)
+train_dataset = datasets.ImageFolder(root='ycbv_classification_original/train', transform=transform_train)
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Load the validation set
-val_dataset = datasets.ImageFolder(root='dataset/val', transform=transform_val)
+val_dataset = datasets.ImageFolder(root='ycbv_classification_original/val', transform=transform_val)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
 
@@ -98,7 +98,7 @@ def test_loop(dataloader, model, loss_fn):
 
 #Initialize the loss function
 loss_fn = nn.CrossEntropyLoss()
-epochs = 1 
+epochs = 10
 learning_rate = 0.00005
 weight_decay = 1e-4
 #optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
@@ -137,10 +137,10 @@ for t in range(epochs):
 model.load_state_dict(best_model_weights)  # Revert to best weights if accuracy drops
 print("Done!")
 
-torch.save(model, 'results/res_model_new2.pth')
+torch.save(model, '../results/res_model_ycbv_original2.pth')
 print(f"Model trained with hp: epochs: {epochs}, learning_rate{learning_rate}, batch_size: {batch_size}\n, optimizer: Adam")
 #model = torch.load('model.pth', weights_only=False),
 
 
 
-#trained a 92% accurate model on layer 2, 3, 4, and ff again, with parameters: epochs 6, learning_rate 5e-5, batch_size 5 to atain 100% on val set -> stored under res_model_100.pth
+#trained a 92% accurate model on layer 2, 3, 4, and ff again, with parameters: epochs 6, learning_rate 5e-5, batch_size 5 to atain 98% on val set -> stored under res_model_100.pth
